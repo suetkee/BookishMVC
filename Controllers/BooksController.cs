@@ -2,27 +2,48 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BookishDotnetMvc.Models;
 using BookishDotnetMvc.ViewModels;
+using Bookish;
 
 namespace BookishDotnetMvc.Controllers
 {
     public class BooksController : Controller
     {
-        // GET: Books
-        public IActionResult Index()
-        {
-            var books = new List<BookViewModel>
-            { new BookViewModel { Id=1, Title ="The Hitchhiker's Guide to the Galaxy", Author = "Douglas Adams", PublicationYear = 1979, Genre = "Science Fiction"}, 
-              new BookViewModel  {Id=2, Title ="The Lord of the Rings", Author = "J.R.R. Tolkien", PublicationYear = 1954, Genre = "Fantasy"},
-              new BookViewModel  {Id=3, Title ="Crime and Punishments", Author = "Fyodor Dostoevsky", PublicationYear = 1866, Genre = "psychological drama"},
-              new BookViewModel  {Id=4, Title ="Matilda", Author = "Roald Dahl", PublicationYear = 1988, Genre = "Children's Fiction"},};
 
-            return View(books);
+        private readonly BookishContext _context;
+
+        public BooksController(BookishContext context)
+        {
+            _context = context;
+        }
+
+        // GET: Books
+        public async Task<IActionResult> Index()
+        {
+            List<BookViewModel> movies = (await _context.Books.Include(book => book.Author).ToListAsync()).Select(movie => new BookViewModel(movie)).ToList();
+            return View(movies);
         }
 
         // GET: Books/Create
         public IActionResult Create()
         {
             return View();
+        }
+
+        // POST: Books/Create
+        [HttpPost]
+        public async Task<IActionResult> Create([Bind("Title,Author,PublicationYear,Genre")] BookViewModel bookViewModel)
+        {
+            if (!ModelState.IsValid) {
+                return View(bookViewModel);
+            }
+            Person? author = _context.Person.Where(person => person.Name == bookViewModel.Author).FirstOrDefault();
+            if (author == null) {
+                author = new Person() { Name = bookViewModel.Author };
+                _context.Person.Add(author);
+            }
+            _context.Books.Add(new Book(bookViewModel, author));
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }
