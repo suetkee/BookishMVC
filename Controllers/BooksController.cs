@@ -19,8 +19,8 @@ namespace BookishDotnetMvc.Controllers
         // GET: Books
         public async Task<IActionResult> Index()
         {
-            List<BookViewModel> movies = (await _context.Books.Include(book => book.Author).ToListAsync()).Select(movie => new BookViewModel(movie)).ToList();
-            return View(movies);
+            List<BookViewModel> books = (await _context.Books.Include(book => book.Author).ToListAsync()).Select(movie => new BookViewModel(movie, [])).ToList();
+            return View(books);
         }
 
         // GET: Books/Create

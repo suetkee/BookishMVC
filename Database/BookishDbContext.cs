@@ -14,5 +14,6 @@ namespace Bookish {
             // This is the configuration used for connecting to the database
             optionsBuilder.UseNpgsql(@"Server=localhost;Port=5432;Database=bookish;User Id=bookish;Password=bookish;");
         }
+        public DbSet<BookishDotnetMvc.Models.Member> Member { get; set; } = default!;
     }
 }
