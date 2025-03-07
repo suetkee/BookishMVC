@@ -7,7 +7,7 @@ namespace Bookish {
         // Put all the tables you want in your database here
         public DbSet<Book> Books { get; set; }
         public DbSet<Copy> Copy { get; set; }
-        public DbSet<Person> Person { get; set; }
+        public DbSet<Author> Author { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         { 

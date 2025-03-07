@@ -36,10 +36,10 @@ namespace BookishDotnetMvc.Controllers
             if (!ModelState.IsValid) {
                 return View(bookViewModel);
             }
-            Person? author = _context.Person.Where(person => person.Name == bookViewModel.Author).FirstOrDefault();
+            Author? author = _context.Author.Where(person => person.Name == bookViewModel.Author).FirstOrDefault();
             if (author == null) {
-                author = new Person() { Name = bookViewModel.Author };
-                _context.Person.Add(author);
+                author = new Author() { Name = bookViewModel.Author };
+                _context.Author.Add(author);
             }
             _context.Books.Add(new Book(bookViewModel, author));
             await _context.SaveChangesAsync();
