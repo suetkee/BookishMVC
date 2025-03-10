@@ -56,10 +56,7 @@ namespace MVC.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,dateOfBirth,Email")] MemberViewModel member)
-        // DateOnly.Parse
         {
-            member.dateOfBirth = DateOnly.Parse(member.dateOfBirth.ToString());
-            Console.WriteLine(ModelState.IsValid);
             if (!ModelState.IsValid) {
                 return View(member);
             }
@@ -98,6 +95,17 @@ namespace MVC.Controllers
             if (id != member.Id)
             {
                 return NotFound();
+            }
+
+            if(!ModelState.IsValid) {
+                foreach (var state in ModelState) {
+                    if (state.Value.Errors.Count > 0) {
+                        foreach (var error in state.Value.Errors) {
+                            Console.WriteLine($"Field: {state.Key}, Error: {error.ErrorMessage}");          
+                        }
+                    }
+                    
+                }
             }
 
             if (ModelState.IsValid)

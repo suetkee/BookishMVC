@@ -8,9 +8,9 @@ public class Member
     public string Name { get; set; }
     public DateOnly dateOfBirth { get; set; }
     public string Email { get; set; }
-    public ICollection<Copy> Loans { get; set; }
+    public ICollection<Loan>? Loans { get; set; }
 
-    public Member(MemberViewModel memberViewModel, ICollection<Copy> loans) {
+    public Member(MemberViewModel memberViewModel, ICollection<Loan> loans) {
     Id = memberViewModel.Id;
     Name= memberViewModel.Name;
     dateOfBirth= memberViewModel.dateOfBirth;
