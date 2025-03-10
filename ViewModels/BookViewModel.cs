@@ -9,12 +9,14 @@ public class BookViewModel
     public string Author { get; set; }
     public int PublicationYear { get; set; }
     public string Genre { get; set; }
+    public ICollection<Copy> Copies { get; set; }
     public BookViewModel() {}
-    public BookViewModel(Book book) {
+    public BookViewModel(Book book, ICollection<Copy> copies ) {
         Id = book.Id;
         Title = book.Title;
         Author = book.Author.Name;
         PublicationYear = book.PublicationYear;
         Genre = book.Genre;
+        Copies = copies;
     }
 }

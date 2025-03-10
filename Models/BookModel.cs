@@ -11,10 +11,10 @@ public class Book
     public string Genre { get; set; }
     public ICollection<Copy> Copies { get; set; }
 
-    public Book(BookViewModel bookViewModel, Author person) {
+    public Book(BookViewModel bookViewModel, Author author) {
         Id = bookViewModel.Id;
         Title = bookViewModel.Title;
-        Author = person;
+        Author = author;
         PublicationYear = bookViewModel.PublicationYear;
         Genre = bookViewModel.Genre;
     }

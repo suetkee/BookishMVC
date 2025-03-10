@@ -3,6 +3,7 @@ using System;
 using Bookish;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MVC.Migrations
 {
     [DbContext(typeof(BookishContext))]
-    partial class BookishContextModelSnapshot : ModelSnapshot
+    [Migration("20250307114606_CreatedMemberDB")]
+    partial class CreatedMemberDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,26 +85,8 @@ namespace MVC.Migrations
                     b.Property<int>("BookId")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookId");
-
-                    b.ToTable("Copy");
-                });
-
-            modelBuilder.Entity("BookishDotnetMvc.Models.Loan", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
                     b.Property<DateTime>("CheckoutDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CopyId")
-                        .HasColumnType("integer");
 
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("timestamp with time zone");
@@ -114,11 +99,11 @@ namespace MVC.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CopyId");
+                    b.HasIndex("BookId");
 
                     b.HasIndex("MemberId");
 
-                    b.ToTable("Loan");
+                    b.ToTable("Copy");
                 });
 
             modelBuilder.Entity("BookishDotnetMvc.Models.Member", b =>
@@ -164,24 +149,13 @@ namespace MVC.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Book");
-                });
-
-            modelBuilder.Entity("BookishDotnetMvc.Models.Loan", b =>
-                {
-                    b.HasOne("BookishDotnetMvc.Models.Copy", "Copy")
-                        .WithMany()
-                        .HasForeignKey("CopyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("BookishDotnetMvc.Models.Member", "Member")
                         .WithMany("Loans")
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Copy");
+                    b.Navigation("Book");
 
                     b.Navigation("Member");
                 });
