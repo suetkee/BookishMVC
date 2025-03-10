@@ -1,6 +1,9 @@
+using BookishDotnetMvc.Models;
 using BookishDotnetMvc.ViewModels;
 
+namespace BookishDotnetMvc.Models;
+
 public class Copy {
-    public int Copy_Id { get; set; }
-    public int Book_Id { get; set; }
+    public int Id { get; set; }
+    public Book Book { get; set; }
 }
