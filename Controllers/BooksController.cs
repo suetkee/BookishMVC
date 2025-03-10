@@ -34,14 +34,6 @@ namespace BookishDotnetMvc.Controllers
         public async Task<IActionResult> Create([Bind("Title,Author,PublicationYear,Genre, Copies")] BookViewModel bookViewModel)
         {
             if (!ModelState.IsValid) {
-                foreach (var state in ModelState) {
-                    if (state.Value.Errors.Count > 0) {
-                        foreach (var error in state.Value.Errors) {
-                            Console.WriteLine($"Field: {state.Key}, Error: {error.ErrorMessage}");          
-                        }
-                    }
-                    
-                }
                 return View(bookViewModel);
             }
             Author? author = _context.Author.Where(person => person.Name == bookViewModel.Author).FirstOrDefault();

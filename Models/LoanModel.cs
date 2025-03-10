@@ -17,4 +17,6 @@ public class Loan {
         CheckoutDate = DateTime.Today;
         DueDate = CheckoutDate.AddDays(21);
     }
+
+     public Loan() {}
 }

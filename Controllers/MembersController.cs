@@ -195,13 +195,7 @@ namespace MVC.Controllers
             _context.Add(loan);
             await _context.SaveChangesAsync();
             
-
-            // _context.Add(member)
-            // _context.Add(new Member(member, []));
-            // await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Details));
-
-            // return View(member);
         }
 
 
