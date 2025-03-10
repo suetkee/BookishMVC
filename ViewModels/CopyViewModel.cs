@@ -3,8 +3,8 @@ using BookishDotnetMvc.ViewModels;
 
 namespace BookishDotnetMvc.Models;
 
-public class Copy {
+public class CopyViewModel {
     public int Id { get; set; }
-    public Book Book { get; set; }
+    public int BookId { get; set; }
     public string Barcode { get; set; }
 }

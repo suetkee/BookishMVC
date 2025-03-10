@@ -46,11 +46,13 @@
                     @Html.DisplayFor(modelItem => item.Genre)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Copies)
+                    @foreach (var copy in item.Copies) {
+                        <div>@copy.Barcode</div>
+                    }
                 </td>
                 <td>
+                    <a asp-action="AddCopy" asp-route-id="@item.Id">Add Copy</a> |
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 </td>
         </tr>

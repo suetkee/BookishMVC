@@ -19,7 +19,7 @@ namespace BookishDotnetMvc.Controllers
         // GET: Books
         public async Task<IActionResult> Index()
         {
-            List<BookViewModel> books = (await _context.Books.Include(book => book.Author).Include(book => book.Copies).ToListAsync()).Select(book => new BookViewModel(book, book.Copies.Count)).ToList();
+            List<BookViewModel> books = (await _context.Books.Include(book => book.Author).Include(book => book.Copies).ToListAsync()).Select(book => new BookViewModel(book, book.Copies)).ToList();
             return View(books);
         }
 
@@ -49,11 +49,7 @@ namespace BookishDotnetMvc.Controllers
                 author = new Author() { Name = bookViewModel.Author };
                 _context.Author.Add(author);
             }
-            var book = new Book(bookViewModel, author);
-            _context.Books.Add(book);
-            for (int i = 0; i < bookViewModel.Copies; i++ ) {
-                _context.Copy.Add(new Copy() {Book = book});
-            }
+            _context.Books.Add(new Book(bookViewModel, author));
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -87,17 +83,6 @@ namespace BookishDotnetMvc.Controllers
                 return NotFound();
             }
 
-            // if(!ModelState.IsValid) {
-            //     foreach (var state in ModelState) {
-            //         if (state.Value.Errors.Count > 0) {
-            //             foreach (var error in state.Value.Errors) {
-            //                 Console.WriteLine($"Field: {state.Key}, Error: {error.ErrorMessage}");          
-            //             }
-            //         }
-                    
-            //     }
-            // }
-
             if (ModelState.IsValid)
             {
                 try
@@ -119,6 +104,44 @@ namespace BookishDotnetMvc.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(book);
+        }
+
+        // GET: Books/AddCopy/5
+        public async Task<IActionResult> AddCopy(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var book = await _context.Books.FindAsync(id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            return View();
+        }
+
+        // POST: Books/AddCopy/5
+        [HttpPost]
+        public async Task<IActionResult> AddCopy(int id, [Bind("Barcode")] CopyViewModel copyViewModel)
+        {
+            var book = await _context.Books.FindAsync(id);
+            
+            if (book == null || id != book.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                var copy = new Copy() {Barcode = copyViewModel.Barcode, Book = book};
+                _context.Copy.Add(copy);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(copyViewModel);
         }
 
         private bool BookExists(int id)
