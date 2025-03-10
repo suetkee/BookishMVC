@@ -19,7 +19,7 @@ namespace BookishDotnetMvc.Controllers
         // GET: Books
         public async Task<IActionResult> Index()
         {
-            List<BookViewModel> books = (await _context.Books.Include(book => book.Author).Include(book => book.Copies).ToListAsync()).Select(book => new BookViewModel(book, book.Copies)).ToList();
+            List<BookViewModel> books = (await _context.Books.Include(book => book.Author).Include(book => book.Copies).ToListAsync()).Select(book => new BookViewModel(book)).ToList();
             return View(books);
         }
 
@@ -31,7 +31,7 @@ namespace BookishDotnetMvc.Controllers
 
         // POST: Books/Create
         [HttpPost]
-        public async Task<IActionResult> Create([Bind("Title,Author,PublicationYear,Genre")] BookViewModel bookViewModel)
+        public async Task<IActionResult> Create([Bind("Title,Author,PublicationYear,Genre, Copies")] BookViewModel bookViewModel)
         {
             if (!ModelState.IsValid) {
                 foreach (var state in ModelState) {
@@ -63,12 +63,12 @@ namespace BookishDotnetMvc.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Books.FindAsync(id);
+            var book = await _context.Books.Include(book => book.Author).FirstOrDefaultAsync(book => book.Id == id);
             if (book == null)
             {
                 return NotFound();
             }
-            return View(book);
+            return View(new BookViewModel(book));
         }
 
         // POST: Books/Edit/5
@@ -76,9 +76,9 @@ namespace BookishDotnetMvc.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Author,PublicationYear,Genre, Copies")] Book book)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Author,PublicationYear,Genre")] BookViewModel bookViewModel)
         {
-            if (id != book.Id)
+            if (id != bookViewModel.Id)
             {
                 return NotFound();
             }
@@ -87,12 +87,19 @@ namespace BookishDotnetMvc.Controllers
             {
                 try
                 {
+                    Author? author = _context.Author.Where(person => person.Name == bookViewModel.Author).FirstOrDefault();
+                    if (author == null)
+                    {
+                        author = new Author() { Name = bookViewModel.Author };
+                        _context.Author.Add(author);
+                    }
+                    var book = new Book(bookViewModel, author);
                     _context.Update(book);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BookExists(book.Id))
+                    if (!BookExists(bookViewModel.Id))
                     {
                         return NotFound();
                     }
@@ -103,7 +110,7 @@ namespace BookishDotnetMvc.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(book);
+            return View(bookViewModel);
         }
 
         // GET: Books/AddCopy/5
@@ -142,6 +149,38 @@ namespace BookishDotnetMvc.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(copyViewModel);
+        }
+
+        // GET: Books/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var book = await _context.Books.Include(book => book.Author).FirstOrDefaultAsync(book => book.Id == id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            return View(book);
+        }
+
+        // POST: Books/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var book = await _context.Books.FindAsync(id);
+            if (book != null)
+            {
+                _context.Books.Remove(book);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         private bool BookExists(int id)
