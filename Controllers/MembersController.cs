@@ -168,5 +168,47 @@ namespace MVC.Controllers
         {
             return _context.Member.Any(e => e.Id == id);
         }
+
+        // GET: Members/AddLoan
+        public IActionResult AddLoan(int? id)
+        {
+            return View();
+        }
+
+        // POST: Members/AddLoan
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddLoan(int id, [Bind("Barcode")] Copy copyModel)
+        {
+            if (!ModelState.IsValid) {
+                return View(copyModel);
+            }
+            Member? member = _context.Member.Where(member => member.Id == id).FirstOrDefault();
+            Copy? copy = _context.Copy.Where(copy => copy.Barcode == copyModel.Barcode).FirstOrDefault();
+            if (copy == null || member == null) {
+               return NotFound();
+            } 
+
+            var loan = new Loan(copy, member);
+            _context.Add(loan);
+            await _context.SaveChangesAsync();
+            
+
+            // _context.Add(member)
+            // _context.Add(new Member(member, []));
+            // await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Details));
+
+            // return View(member);
+        }
+
+
+
+
+
+
+
     }
 }

@@ -10,4 +10,11 @@ public class Loan {
     public DateTime CheckoutDate { get; set; }
     public DateTime DueDate { get; set; }
     public DateTime? ReturnDate { get; set; }
+
+    public Loan(Copy copy, Member member) {
+        Copy = copy;
+        Member = member;
+        CheckoutDate = DateTime.Today;
+        DueDate = CheckoutDate.AddDays(21);
+    }
 }
