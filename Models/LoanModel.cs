@@ -14,7 +14,7 @@ public class Loan {
     public Loan(Copy copy, Member member) {
         Copy = copy;
         Member = member;
-        CheckoutDate = DateTime.Today;
+        CheckoutDate = DateTime.Now.ToUniversalTime();
         DueDate = CheckoutDate.AddDays(21);
     }
 

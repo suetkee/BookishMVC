@@ -75,34 +75,34 @@ namespace BookishDotnetMvc.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    Author? author = _context.Author.Where(person => person.Name == bookViewModel.Author).FirstOrDefault();
-                    if (author == null)
-                    {
-                        author = new Author() { Name = bookViewModel.Author };
-                        _context.Author.Add(author);
-                    }
-                    var book = new Book(bookViewModel, author);
-                    _context.Update(book);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!BookExists(bookViewModel.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+            if (!ModelState.IsValid) {
+                return View(bookViewModel);
             }
-            return View(bookViewModel);
+
+            try
+            {
+                Author? author = _context.Author.Where(person => person.Name == bookViewModel.Author).FirstOrDefault();
+                if (author == null)
+                {
+                    author = new Author() { Name = bookViewModel.Author };
+                    _context.Author.Add(author);
+                }
+                var book = new Book(bookViewModel, author);
+                _context.Update(book);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!BookExists(bookViewModel.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Books/AddCopy/5
@@ -135,7 +135,8 @@ namespace BookishDotnetMvc.Controllers
 
             if (ModelState.IsValid)
             {
-                var copy = new Copy() {Barcode = copyViewModel.Barcode, Book = book};
+                var barcode = copyViewModel.Barcode + Guid.NewGuid().ToString();
+                var copy = new Copy() {Barcode = barcode, Book = book};
                 _context.Copy.Add(copy);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

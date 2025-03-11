@@ -34,8 +34,7 @@ namespace MVC.Controllers
                 return NotFound();
             }
 
-            var member = await _context.Member
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var member = await _context.Member.Include(member => member.Loans!).ThenInclude(loan => loan.Copy).ThenInclude(copy => copy.Book).FirstOrDefaultAsync(m => m.Id == id);
             if (member == null)
             {
                 return NotFound();
@@ -180,13 +179,13 @@ namespace MVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddLoan(int id, [Bind("Barcode")] Copy copyModel)
+        public async Task<IActionResult> AddLoan(int id, [Bind("Barcode")] LoanViewModel loanViewModelModel)
         {
             if (!ModelState.IsValid) {
-                return View(copyModel);
+                return View(loanViewModelModel);
             }
             Member? member = _context.Member.Where(member => member.Id == id).FirstOrDefault();
-            Copy? copy = _context.Copy.Where(copy => copy.Barcode == copyModel.Barcode).FirstOrDefault();
+            Copy? copy = _context.Copy.Where(copy => copy.Barcode == loanViewModelModel.Barcode).FirstOrDefault();
             if (copy == null || member == null) {
                return NotFound();
             } 
@@ -195,14 +194,7 @@ namespace MVC.Controllers
             _context.Add(loan);
             await _context.SaveChangesAsync();
             
-            return RedirectToAction(nameof(Details));
+            return RedirectToAction(nameof(Details), new { id = id });
         }
-
-
-
-
-
-
-
     }
 }
