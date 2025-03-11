@@ -34,8 +34,7 @@ namespace MVC.Controllers
                 return NotFound();
             }
 
-            var member = await _context.Member
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var member = await _context.Member.Include(member => member.Loans!).ThenInclude(loan => loan.Copy).ThenInclude(copy => copy.Book).FirstOrDefaultAsync(m => m.Id == id);
             if (member == null)
             {
                 return NotFound();
@@ -167,6 +166,35 @@ namespace MVC.Controllers
         private bool MemberExists(int id)
         {
             return _context.Member.Any(e => e.Id == id);
+        }
+
+        // GET: Members/AddLoan
+        public IActionResult AddLoan(int? id)
+        {
+            return View();
+        }
+
+        // POST: Members/AddLoan
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddLoan(int id, [Bind("Barcode")] LoanViewModel loanViewModelModel)
+        {
+            if (!ModelState.IsValid) {
+                return View(loanViewModelModel);
+            }
+            Member? member = _context.Member.Where(member => member.Id == id).FirstOrDefault();
+            Copy? copy = _context.Copy.Where(copy => copy.Barcode == loanViewModelModel.Barcode).FirstOrDefault();
+            if (copy == null || member == null) {
+               return NotFound();
+            } 
+
+            var loan = new Loan(copy, member);
+            _context.Add(loan);
+            await _context.SaveChangesAsync();
+            
+            return RedirectToAction(nameof(Details), new { id = id });
         }
     }
 }

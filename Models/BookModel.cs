@@ -9,7 +9,7 @@ public class Book
     public Author Author { get; set; }
     public int PublicationYear { get; set; }
     public string Genre { get; set; }
-    public ICollection<Copy> Copies { get; set; }
+    public ICollection<Copy>? Copies { get; set; }
 
     public Book(BookViewModel bookViewModel, Author author) {
         Id = bookViewModel.Id;
@@ -17,6 +17,7 @@ public class Book
         Author = author;
         PublicationYear = bookViewModel.PublicationYear;
         Genre = bookViewModel.Genre;
+        Copies = bookViewModel.Copies;
     }
      public Book() {}
 }

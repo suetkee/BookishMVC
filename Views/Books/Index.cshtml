@@ -24,6 +24,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Genre)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Copies)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -41,6 +44,16 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Genre)
+                </td>
+                <td>
+                    @foreach (var copy in item.Copies) {
+                        <div>@copy.Barcode</div>
+                    }
+                </td>
+                <td>
+                    <a asp-action="AddCopy" asp-route-id="@item.Id">Add Copy</a> |
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 </td>
         </tr>
         }

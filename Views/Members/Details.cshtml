@@ -29,6 +29,21 @@
             @Html.DisplayFor(model => model.Email)
         </dd>
     </dl>
+    <h4>Loans</h4>
+    <div>
+        @foreach (var loan in Model.Loans)
+        {
+            <div>
+                <span>
+                    @loan.CheckoutDate
+                </span>
+                <p>
+                    @loan.Copy.Book.Title
+                </p>
+                <!-- Add more properties as needed -->
+            </div>
+        }
+    </div>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
